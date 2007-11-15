@@ -1,3 +1,4 @@
+package org.FlickrCrawler.examples;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
