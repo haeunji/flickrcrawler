@@ -1,3 +1,4 @@
+package org.FlickrCrawler.PreCrawlTools;
 
 
 import java.io.BufferedReader;
