@@ -10,7 +10,7 @@ import com.mysql.jdbc.ResultSet;
 
 
 public class Database {
-	static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
+	static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
 	static String user = "flickr";
 	static String passwd = "1234";
 	
@@ -123,7 +123,7 @@ public class Database {
 	public ArrayList getUserList() throws SQLException{
 		//
 		//Post: returns an ArrayList of Usernames
-		ArrayList<String> userList = null;
+		ArrayList<String> userList = new ArrayList<String>();
 		Connection con = getConnection();
 		Statement s = con.createStatement();
 		String query = "SELECT userid FROM list_of_user";
@@ -131,10 +131,28 @@ public class Database {
 		int i=0;
 		while(temp.next()) //Cycling through rows in ResultSet
 		{
-			userList.add(temp.getString("userid"));
+			String j = temp.getString("userid");
+			userList.add(j);
 			i++;
 		}
 		System.out.println("Total of "+i+" userids loaded.");
 		return userList;
+	}
+	/**
+	 * Check If User ID exists in the List_Of_User Table
+	 * @param UserId
+	 * @return
+	 *  True if Exist
+	 *  False if not exist
+	 * @throws SQLException 
+	 */
+	public boolean CheckUser(String UserId) throws SQLException{
+		Connection con = getConnection();
+		Statement s = con.createStatement();
+		String query = "SELECT userid FROM list_of_user where userid='"+UserId+"'";
+		ResultSet temp = (ResultSet) s.executeQuery(query);
+		if (!temp.next()){return false;}
+		else { return true;}
+		
 	}
 }

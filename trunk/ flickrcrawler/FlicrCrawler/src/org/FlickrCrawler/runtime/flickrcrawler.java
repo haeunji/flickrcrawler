@@ -1,5 +1,7 @@
 package org.FlickrCrawler.runtime;
+import java.sql.SQLException;
 import java.util.*;
+import java.io.IOException;
 import java.lang.*;
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
@@ -8,11 +10,15 @@ import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.auth.Auth;
 import com.aetrion.flickr.auth.AuthInterface;
 import com.aetrion.flickr.auth.Permission;
+import com.aetrion.flickr.contacts.ContactsInterface;
 import com.aetrion.flickr.util.IOUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 import org.FlickrCrawler.PreCrawlTools.*;
+import org.FlickrCrawler.database.Database;
 
 import org.FlickrCrawler.Authorization.Authorize;
+import org.FlickrCrawler.Crawlers.ContactListCrawler;
+import org.xml.sax.SAXException;
 
 /*
  * flickrcrawler.java
@@ -33,13 +39,14 @@ public class flickrcrawler {
     String frob;
     String token;
     REST rest;
-    Flickr f;
+    static Flickr f;
     static String secret = "ba20e9e81829dde5";
     
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, SQLException {
         Authorize authorization=null;
         try {
             authorization = new Authorize();
+            f = authorization.getFlickr();
         } catch (ParserConfigurationException ex) {
             ex.printStackTrace();
         }
@@ -68,6 +75,27 @@ public class flickrcrawler {
         
         //AddInitialUserListToDatabase s = new AddInitialUserListToDatabase();
         //s.createUserIdList();
+        
+        Database db = new Database();
+        ArrayList<String> UserIdList = null;
+        try {
+			UserIdList = db.getUserList();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        ContactListCrawler contactlistcrawler = new ContactListCrawler(f);
+        try {
+			contactlistcrawler.Crawl(UserIdList);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        
+
+		
+		
 
 
         System.out.println("Finished! ");
