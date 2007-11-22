@@ -18,6 +18,7 @@ import org.FlickrCrawler.database.Database;
 
 import org.FlickrCrawler.Authorization.Authorize;
 import org.FlickrCrawler.Crawlers.ContactListCrawler;
+import org.FlickrCrawler.Crawlers.PictureInfoCrawler;
 import org.xml.sax.SAXException;
 
 /*
@@ -84,15 +85,28 @@ public class flickrcrawler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		/**
+		 * The following part of code crawls the Contact List and updates
+		 * corresponding tables in the database
+		 */
+		/*
         ContactListCrawler contactlistcrawler = new ContactListCrawler(f);
         try {
 			contactlistcrawler.Crawl(UserIdList);
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		
+		
+		/**
+		 * The Following part of code crawls picture ownership and picture details 
+		 * And updates corresponding tables in database. 
+		 */
+		PictureInfoCrawler pictureinfocrawler = new PictureInfoCrawler(f);
 
-        
+        pictureinfocrawler.crawl(UserIdList);
 
 		
 		
