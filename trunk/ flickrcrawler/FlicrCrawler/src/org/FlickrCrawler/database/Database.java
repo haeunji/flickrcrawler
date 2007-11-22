@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.mysql.jdbc.ResultSet;
 
@@ -56,16 +57,33 @@ public class Database {
 	
 	public static void addPicture(
 			String userid,
-			String pictureid,
-			String date_upload,
-			String last_update) throws SQLException{
+			String pictureid) throws SQLException{
 		//PRE:
 		//POST: database table user_picture is updated with latest picture 
 		Connection con = getConnection();
 		Statement s = con.createStatement();
-		String query = "INSERT INTO user_picture (id,userid,pictureid,date_upload,last_update,timestamp ) VALUES " +
-				" (NULL, '"+userid+"','"+pictureid+"','"+date_upload+"','"+last_update+"',NOW())";
+		String query = "INSERT INTO user_picture (id,userid,pictureid,timestamp ) VALUES " +
+				" (NULL, '"+userid+"','"+pictureid+"',NOW())";
 		s.executeUpdate(query);
+	}
+	
+	public static void addPictureDetails(
+			String pictureid,
+			long l,
+			long m){
+		//Add a picture detail to Picture Detail table
+		Connection con = getConnection();
+		Statement s;
+		try {
+			s = con.createStatement();
+			String query = "INSERT INTO picture_details (`pictureid`,`date_posted`,`last_update` ) VALUES " +
+				" ( '"+pictureid+"',FROM_UNIXTIME('"+l+"'),FROM_UNIXTIME('"+m+"'))";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// If SQLException happens, means Picture already in database, ignore
+			//e.printStackTrace();
+		}
+
 	}
 	
 	public static void addTagToPic(
