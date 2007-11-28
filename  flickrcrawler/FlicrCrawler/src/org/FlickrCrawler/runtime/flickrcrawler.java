@@ -119,8 +119,14 @@ public class flickrcrawler {
 		 * and tags, using a test picture id
 		 */
 		
-		//CommentCrawler commentcrawler = new CommentCrawler(f);
-		//commentcrawler.crawl("417646359");
+		CommentCrawler commentcrawler = null;
+		try {
+			commentcrawler = new CommentCrawler(f);
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		commentcrawler.crawl("417646359");
 		
 		TagCrawler tagcrawler = new TagCrawler(f);
 		tagcrawler.crawl("417646359");
