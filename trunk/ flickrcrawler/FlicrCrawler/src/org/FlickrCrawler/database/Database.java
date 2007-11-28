@@ -11,7 +11,7 @@ import com.mysql.jdbc.ResultSet;
 
 
 public class Database {
-	static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
+	static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
 	static String user = "flickr";
 	static String passwd = "1234";
 	
@@ -35,7 +35,7 @@ public class Database {
 		}
 		return con;
 	}
-	public static void addContact(
+	public void addContact(
 			String userid, 
 			String contactid){
 		//PRE: All inputs are valid
@@ -67,7 +67,7 @@ public class Database {
 		s.executeUpdate(query);
 	}
 	
-	public static void addPictureDetails(
+	public void addPictureDetails(
 			String pictureid,
 			long l,
 			long m){
@@ -86,7 +86,7 @@ public class Database {
 
 	}
 	
-	public static void addTagToPic(
+	public void addTagToPic(
 			String pictureid,
 			String tagid,
 			String tag,
@@ -100,21 +100,21 @@ public class Database {
 		s.executeUpdate(query);
 	}
 	
-	public static void addCommentToPic(
+	public void addCommentToPic(
 			String authorid,
 			String commentid,
 			String pictureid,
-			String datecreate) throws SQLException{
+			long datecreated) throws SQLException{
 		//PRE:
 		//POST: a comment id is added to a corresponding picture, including author info
 		Connection con = getConnection();
 		Statement s = con.createStatement();
 		String query = "INSERT INTO comments_of_a_pic (id,authorid,commentid,pictureid,datecreate,timestamp ) VALUES " +
-				" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"','"+datecreate+"',NOW())";
+				" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"','"+datecreated+"',NOW())";
 		s.executeUpdate(query);
 	}
 	
-	public static void addTagToUser(
+	public void addTagToUser(
 			String userid,
 			String tagid,
 			String tag) throws SQLException{

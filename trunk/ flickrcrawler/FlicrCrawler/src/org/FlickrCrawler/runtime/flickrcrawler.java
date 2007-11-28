@@ -17,8 +17,10 @@ import org.FlickrCrawler.PreCrawlTools.*;
 import org.FlickrCrawler.database.Database;
 
 import org.FlickrCrawler.Authorization.Authorize;
+import org.FlickrCrawler.Crawlers.CommentCrawler;
 import org.FlickrCrawler.Crawlers.ContactListCrawler;
 import org.FlickrCrawler.Crawlers.PictureInfoCrawler;
+import org.FlickrCrawler.Crawlers.TagCrawler;
 import org.xml.sax.SAXException;
 
 /*
@@ -104,12 +106,24 @@ public class flickrcrawler {
 		 * The Following part of code crawls picture ownership and picture details 
 		 * And updates corresponding tables in database. 
 		 */
+		
+		/*
 		PictureInfoCrawler pictureinfocrawler = new PictureInfoCrawler(f);
 
         pictureinfocrawler.crawl(UserIdList);
 
+		*/
 		
+		/**
+		 * The following part of code crawls picture comments
+		 * and tags, using a test picture id
+		 */
 		
+		//CommentCrawler commentcrawler = new CommentCrawler(f);
+		//commentcrawler.crawl("417646359");
+		
+		TagCrawler tagcrawler = new TagCrawler(f);
+		tagcrawler.crawl("417646359");
 
 
         System.out.println("Finished! ");
