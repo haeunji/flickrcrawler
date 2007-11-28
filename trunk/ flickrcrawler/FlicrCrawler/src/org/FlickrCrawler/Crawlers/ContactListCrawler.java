@@ -40,8 +40,9 @@ public class ContactListCrawler {
 		int counter=0;
 		//db.getConnection();
 		while(itr.hasNext()){
+			String userid = (String)itr.next();
 			try {
-				ContactsCollection=contactsinterface.getPublicList((String) itr.next());
+				ContactsCollection=contactsinterface.getPublicList(userid);
 				counter++;
 			} catch (IOException e1) {
 				//IOException happens when the connection is timedout, need to sleep for longer
@@ -54,7 +55,6 @@ public class ContactListCrawler {
 			}
 			Iterator itr2 = ContactsCollection.iterator();
 			while(itr2.hasNext()){
-				String userid = (String) itr.next();
 				// Get the UserID of the Contact 
 				String contactid = ((Contact) itr2.next()).getId();
 				// If the contact is not already in the List_of_user table, add it

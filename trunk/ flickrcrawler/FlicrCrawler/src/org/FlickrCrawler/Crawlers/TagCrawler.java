@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.FlickrCrawler.database.Database;
 import org.xml.sax.SAXException;
 
-import sun.text.CompactShortArray.Iterator;
-
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.photos.Photo;
+import com.aetrion.flickr.tags.Tag;
 import com.aetrion.flickr.tags.TagsInterface;
 
 public class TagCrawler {
@@ -20,13 +20,13 @@ public class TagCrawler {
 	TagsInterface tagsinterface;
 	Database db;
 	Photo photo;
-	Collection tags;
+	ArrayList<Tag> tags;
 	
 	public TagCrawler(Flickr f){
 		tagsinterface = f.getTagsInterface();
 		db = new Database();
 		photo = new Photo();
-		tags = new ArrayList();
+		tags = new ArrayList<Tag>();
 		
 	}
 	
@@ -44,12 +44,15 @@ public class TagCrawler {
 			e.printStackTrace();
 		}
 		
-		tags =  photo.getTags();
-		Iterator itr= (Iterator) tags.iterator();
+		tags =  (ArrayList<Tag>) photo.getTags();
+		Iterator<Tag> itr=  tags.iterator();
 		while(itr.hasNext()){
+			Tag tempTag = itr.next();
 			try {
-				char temp = itr.next();
-				db.addTagToPic(PhotoId, "na", "na", "na");
+				String tagid = tempTag.getId();
+				String tag = "";
+				String tag_author = tempTag.getAuthor();
+				db.addTagToPic(PhotoId, tagid, tag, tag_author);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

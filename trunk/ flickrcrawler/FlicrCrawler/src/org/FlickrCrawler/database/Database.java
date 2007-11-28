@@ -110,7 +110,7 @@ public class Database {
 		Connection con = getConnection();
 		Statement s = con.createStatement();
 		String query = "INSERT INTO comments_of_a_pic (id,authorid,commentid,pictureid,datecreate,timestamp ) VALUES " +
-				" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"','"+datecreated+"',NOW())";
+				" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"',FROM_UNIXTIME('"+datecreated+"'),NOW())";
 		s.executeUpdate(query);
 	}
 	
