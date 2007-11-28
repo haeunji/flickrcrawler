@@ -19,6 +19,7 @@ import org.FlickrCrawler.database.Database;
 import org.FlickrCrawler.Authorization.Authorize;
 import org.FlickrCrawler.Crawlers.CommentCrawler;
 import org.FlickrCrawler.Crawlers.ContactListCrawler;
+import org.FlickrCrawler.Crawlers.FavouriteCrawler;
 import org.FlickrCrawler.Crawlers.PictureInfoCrawler;
 import org.FlickrCrawler.Crawlers.TagCrawler;
 import org.xml.sax.SAXException;
@@ -113,6 +114,11 @@ public class flickrcrawler {
         pictureinfocrawler.crawl(UserIdList);
 
 		*/
+		
+		
+		FavouriteCrawler favouritecrawler = new FavouriteCrawler(f);
+		favouritecrawler.getListOfFavPictures("90933305@N00");
+		
 		
 		/**
 		 * The following part of code crawls picture comments
