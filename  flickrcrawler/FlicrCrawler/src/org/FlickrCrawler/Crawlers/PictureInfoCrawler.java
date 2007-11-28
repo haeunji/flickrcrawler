@@ -25,11 +25,13 @@ public class PictureInfoCrawler {
 	
 	PhotosInterface photosinterface;
 	PeopleInterface peopleinterface;
-	Database db = new Database();
+	Database db;
+
 	
 	public PictureInfoCrawler(Flickr f){
 		photosinterface = f.getPhotosInterface();
 		peopleinterface = f.getPeopleInterface();
+		db = new Database();
 		
 	}
 	
