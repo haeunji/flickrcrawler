@@ -11,7 +11,8 @@ import com.mysql.jdbc.ResultSet;
 
 
 public class Database {
-	static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
+	//static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
+	static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
 	static String user = "flickr";
 	static String passwd = "1234";
 	
@@ -186,6 +187,33 @@ public class Database {
 		System.out.println("Total of "+i+" userids loaded.");
 		return userList;
 	}
+	
+	/**
+	 * To use for testing purpose only, loads first 30 users.
+	 * @return
+	 * @throws SQLException
+	 */
+	public ArrayList getUserListTest() throws SQLException{
+		//
+		//Post: returns an ArrayList of Usernames
+		ArrayList<String> userList = new ArrayList<String>();
+		Connection con = getConnection();
+		Statement s = con.createStatement();
+		String query = "SELECT userid FROM list_of_user";
+		ResultSet temp = (ResultSet) s.executeQuery(query);
+		int i=0;
+		while(temp.next()) //Cycling through rows in ResultSet
+		{
+			String j = temp.getString("userid");
+			userList.add(j);
+			i++;
+			if (i == 30){break;}
+		}
+		System.out.println("Total of "+i+" userids loaded.");
+		return userList;
+	}
+	
+	
 	/**
 	 * Check If User ID exists in the List_Of_User Table
 	 * @param UserId

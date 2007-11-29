@@ -61,7 +61,7 @@ public class flickrcrawler {
         Database db = new Database();
         ArrayList<String> UserIdList = null;
         try {
-			UserIdList = db.getUserList();
+			UserIdList = db.getUserListTest();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
