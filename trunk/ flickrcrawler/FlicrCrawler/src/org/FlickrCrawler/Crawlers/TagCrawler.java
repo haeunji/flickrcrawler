@@ -30,7 +30,7 @@ public class TagCrawler {
 		
 	}
 	
-	public void crawl(String PhotoId){
+	public int crawl(String PhotoId){
 		try {
 			photo = tagsinterface.getListPhoto(PhotoId);
 		} catch (IOException e) {
@@ -58,6 +58,7 @@ public class TagCrawler {
 				e.printStackTrace();
 			}
 		}
+		return tags.size();
 	}
 
 }

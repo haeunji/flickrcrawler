@@ -34,7 +34,7 @@ public class CommentCrawler {
 		
 	}
 	
-	public void crawl(String PictureId){
+	public int crawl(String PictureId){
 
 		try {
 			CommentsList = new ArrayList<Comment>();
@@ -68,6 +68,7 @@ public class CommentCrawler {
 				e.printStackTrace();
 			}
 		}
+		return CommentsList.size();
 		
 	}
 

@@ -126,8 +126,10 @@ public class PictureInfoCrawler {
 			 * For each photo, we need to get the comments as well as tags for it. 
 			 * TagCrawler and CommentsCrawler is used to get these information
 			 */
-			commentcrawler.crawl(photoId);
-			tagcrawler.crawl(photoId);
+			int commentNum = commentcrawler.crawl(photoId);
+			System.out.println("		Comment Crawled : "+commentNum);
+			int tagNum = tagcrawler.crawl(photoId);
+			System.out.println("		Tags Crawled : "+tagNum);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -148,22 +150,26 @@ public class PictureInfoCrawler {
 	public void crawl(ArrayList<String> UserIdList){
 		Iterator itr = UserIdList.iterator();
 		PhotoList tempPhotoList = new PhotoList();
-		int counter = 0;
+		int counter = 1;
 		//For each User, get a list of photos
 		while(itr.hasNext()){
 			tempPhotoList = this.getListOfPhotos((String) itr.next());
+			System.out.println("PictureInfoCrawler Progress : "+counter+" / "+UserIdList.size());
 			//If there the user has no pictures
 			if (null != tempPhotoList){
 				Iterator<Photo> itrPhoto = tempPhotoList.iterator();
 				
 				//For each photos, get the details
+				int detailCounter = 1;
 				while(itrPhoto.hasNext()){
 					this.getPictureDetails(itrPhoto.next().getId());
+					System.out.println("	 Picture Detail Crawling : "+detailCounter+" / "+tempPhotoList.size());
+					detailCounter++;
 				}
 			}
 			
 			counter++;
-			System.out.println("PictureInfoCrawler Progress : "+counter+" / "+UserIdList.size());
+			
 		}
 	}
 
