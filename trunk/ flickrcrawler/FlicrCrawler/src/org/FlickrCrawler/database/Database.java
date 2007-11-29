@@ -35,6 +35,36 @@ public class Database {
 		}
 		return con;
 	}
+	
+	
+	/**
+	 * This function adds one entry in the database table fav_pic
+	 * 
+	 * @param userid
+	 * @param pictureid
+	 * @param pictureownerid
+	 */
+	public void addFav(
+			String userid,
+			String pictureid,
+			String pictureownerid
+			){
+		Connection con = getConnection();
+		Statement s;
+		try {
+			s = con.createStatement();
+			String query = "INSERT INTO fav_picture ( id,userid,pictureid,pictureownerid,timestamp ) VALUES " +
+			"(NULL,'"+userid+"','"+pictureid+"','"+pictureownerid+"',NOW())";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
 	public void addContact(
 			String userid, 
 			String contactid){
@@ -55,7 +85,7 @@ public class Database {
 		}
 	}
 	
-	public static void addPicture(
+	public void addPicture(
 			String userid,
 			String pictureid) throws SQLException{
 		//PRE:

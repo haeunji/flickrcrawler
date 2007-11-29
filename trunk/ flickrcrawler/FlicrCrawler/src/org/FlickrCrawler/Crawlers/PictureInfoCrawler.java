@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.FlickrCrawler.database.Database;
 import org.xml.sax.SAXException;
 
@@ -25,12 +27,21 @@ public class PictureInfoCrawler {
 	
 	PhotosInterface photosinterface;
 	PeopleInterface peopleinterface;
+	CommentCrawler commentcrawler;
+	TagCrawler tagcrawler;
 	Database db;
 
 	
 	public PictureInfoCrawler(Flickr f){
 		photosinterface = f.getPhotosInterface();
 		peopleinterface = f.getPeopleInterface();
+		tagcrawler = new TagCrawler(f);
+		try {
+			commentcrawler = new CommentCrawler(f);
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		db = new Database();
 		
 	}
@@ -110,6 +121,14 @@ public class PictureInfoCrawler {
 			
 			db.addPictureDetails(photoId, date_posted, last_update);
 			db.addPicture(owner.getId(), photoId);
+			
+			/**
+			 * For each photo, we need to get the comments as well as tags for it. 
+			 * TagCrawler and CommentsCrawler is used to get these information
+			 */
+			commentcrawler.crawl(photoId);
+			tagcrawler.crawl(photoId);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
