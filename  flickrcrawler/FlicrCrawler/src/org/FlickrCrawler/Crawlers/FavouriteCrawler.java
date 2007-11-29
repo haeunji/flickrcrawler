@@ -1,6 +1,8 @@
 package org.FlickrCrawler.Crawlers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.FlickrCrawler.database.Database;
 import org.xml.sax.SAXException;
@@ -9,6 +11,7 @@ import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.favorites.FavoritesInterface;
 import com.aetrion.flickr.people.User;
+import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 
 public class FavouriteCrawler {
@@ -33,18 +36,20 @@ public class FavouriteCrawler {
 		String[] Extras=null;
 		try {
 			tempPhotoList = favoritesinterface.getPublicList(UserId, perPage, Page, Extras);
+			FavePhotoList.addAll(tempPhotoList);
+			int totalPages = tempPhotoList.getPages();
 			int total = tempPhotoList.getTotal();
 			
-			/**
-			 * If size of tempPhotoList <perPage, no more pages, jumps out of loop
-			 */
-			while(tempPhotoList.size()==perPage){
+			for (int j=2;j<=totalPages;j++){
+				tempPhotoList = favoritesinterface.getPublicList(UserId, perPage, j, Extras);
 				FavePhotoList.addAll(tempPhotoList);
-				Page++;
-				tempPhotoList = favoritesinterface.getPublicList(UserId, perPage, Page, Extras);
-				
+			
 			}
-			FavePhotoList.addAll(tempPhotoList);
+			
+			System.out.println("total fav = "+total);
+			System.out.println("total FavePhotoList = "+FavePhotoList.size());
+			
+
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -56,7 +61,7 @@ public class FavouriteCrawler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return tempPhotoList;
+		return FavePhotoList;
 	}
 	
 	/**
@@ -66,8 +71,21 @@ public class FavouriteCrawler {
 	 * 
 	 * @param UserId
 	 */
-	public void Crawl(String UserId){
-		//favoritesinterface.getPublicList(UserId, arg1, arg2, arg3)
+	public void Crawl(ArrayList<String> UserIdList){
+		
+		java.util.Iterator<String> itr = UserIdList.iterator();
+		while (itr.hasNext()){
+			String UserId = itr.next();
+			PhotoList favPhotoList = this.getListOfFavPictures(UserId);
+			java.util.Iterator<Photo> PhotoListItr = favPhotoList.iterator();
+			
+			while( PhotoListItr.hasNext()){
+				Photo tempPhoto = PhotoListItr.next();
+				db.addFav(UserId, tempPhoto.getId(), tempPhoto.getOwner().getId());
+			}
+			
+		}
+		
 	}
 
 }

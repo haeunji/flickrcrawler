@@ -60,7 +60,7 @@ public class RandomUserGenerator {
         return list;
     }
     
-    ArrayList validateUserId(ArrayList<String> userIDlist) throws InterruptedException {
+    public ArrayList validateUserId(ArrayList<String> userIDlist) throws InterruptedException {
         
         ArrayList<String> list = userIDlist;
         ArrayList ValidUserList = new ArrayList<User>();
