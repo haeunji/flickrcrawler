@@ -39,10 +39,11 @@ public class FileCreator {
 		String filename = (String) params.get("file");
 		String num = (String) params.get("num");
 		if (filename == null || "".equals(filename) || num == null || "".equals(num)){
+			System.out.println("================================================================");
 			System.out.println("Pleasy specify generated file name by -file filename excluding .txt");
 			System.out.println("For example, if you want to create files with name \"UserList.txt\"");
 			System.out.println("Use the following command : ");
-			System.out.println("        java -jar FileCreator.jar -file UserList -num #_of_files");
+			System.out.println("        java -jar FileCreator.jar file=UserList num=#_of_files");
 			System.out.println("This will create a evenly distributed series of files from the database.");
 			System.out.println("Database.txt needs to be configured correctly before this program is executed.");
 			System.exit(1);
