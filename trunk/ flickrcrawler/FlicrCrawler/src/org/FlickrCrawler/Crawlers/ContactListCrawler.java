@@ -54,6 +54,8 @@ public class ContactListCrawler {
 				Thread.sleep(200);
 			}
 			Iterator itr2 = ContactsCollection.iterator();
+			int number_contacts = ContactsCollection.size();
+			System.out.println("	Adding "+number_contacts+" contacts, Please wait.");
 			while(itr2.hasNext()){
 				// Get the UserID of the Contact 
 				String contactid = ((Contact) itr2.next()).getId();

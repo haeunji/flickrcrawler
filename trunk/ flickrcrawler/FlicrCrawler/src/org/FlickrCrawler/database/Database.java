@@ -1,5 +1,9 @@
 package org.FlickrCrawler.database;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,12 +15,35 @@ import com.mysql.jdbc.ResultSet;
 
 
 public class Database {
-	//static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
-	static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
+	static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
+	//static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
 	static String user = "flickr";
 	static String passwd = "1234";
 	
-	
+	public Database(){
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("database.txt"));
+			String str;
+	        while ((str = in.readLine()) != null) {
+	            if ( str.substring(0, 3).equals("url")){
+	            	databaseUrl = "jdbc:mysql://"+str.substring(4);
+	            }
+	            if ( str.substring(0, 4).equals("user")){
+	            	user = str.substring(5);
+	            }
+	            if ( str.substring(0, 8).equals("password")){
+	            	passwd = str.substring(9);
+	            }
+	        }
+	        in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Cannot find database.txt file! Program will now terminate.");
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+		
+	}
 	static public Connection getConnection()
 	{
 		Connection con = null;
