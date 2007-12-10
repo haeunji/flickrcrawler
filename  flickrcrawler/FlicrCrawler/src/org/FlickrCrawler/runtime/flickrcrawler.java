@@ -1,6 +1,9 @@
 package org.FlickrCrawler.runtime;
 import java.sql.SQLException;
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.*;
 import com.aetrion.flickr.Flickr;
@@ -54,18 +57,41 @@ public class flickrcrawler {
         } catch (ParserConfigurationException ex) {
             ex.printStackTrace();
         }
+        
+        Map params = getArgValue(args);
+        
+        String filename = (String) params.get("file");
+        if (filename == null || "".equals(filename)){
+			System.out.println("Pleasy specify generated file name by -file filename.txt");
+			System.out.println("Use the following command : ");
+			System.out.println("        java -jar flickrcrawler.jar -file=UserList.txt ");
+			System.out.println("Database.txt needs to be configured correctly before this program is executed.");
+			System.exit(1);
+		}
 
         /**
-         * Grabs a list of userIds from the database.
+         * Grabs a list of userIds from the UserListFile.txt.
          */
-        Database db = new Database();
-        ArrayList<String> UserIdList = null;
+        ArrayList<String> UserIdList = new ArrayList();
         try {
-			UserIdList = db.getUserListTest();
+			BufferedReader in = new BufferedReader(new FileReader(filename));
+			String str;
+	        while ((str = in.readLine()) != null) {
+	        	UserIdList.add(str.trim());
+	        }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("UserId list file cannot be found. FlickrCrawler will now terminate.");
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+        
+        /*try {
+			//UserIdList = db.getUserListTest();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 		crawl(UserIdList);
@@ -150,5 +176,24 @@ public class flickrcrawler {
         AddInitialUserListToDatabase s = new AddInitialUserListToDatabase();
         s.createUserIdList();
     }
+    
+	private static Map getArgValue(String[] args) {
+        Map params = new HashMap();
+        for (int i = 0; i < args.length; i++) {
+			String curr = args[i];
+            String argName = curr.toLowerCase();
+            String argValue = "";
+
+			int eqIndex = curr.indexOf('=');
+			if (eqIndex >= 0) {
+				argName = curr.substring(0, eqIndex).trim();
+				argValue = curr.substring(eqIndex+1).trim();
+            }
+
+            params.put(argName.toLowerCase(), argValue);
+        }
+		
+		return params; 
+	}
 
 }
