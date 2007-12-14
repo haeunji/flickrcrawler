@@ -11,16 +11,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
+import snaq.db.ConnectionPool;
+
 import com.mysql.jdbc.ResultSet;
 
 
 public class Database {
-	static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
-	//static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
+	//static String databaseUrl = "jdbc:mysql://rogeryin.no-ip.org:3307/flickrcrawler";
+	static String databaseUrl = "jdbc:mysql://localhost/flickrcrawler";
 	static String user = "flickr";
 	static String passwd = "1234";
 	
 	public Database(){
+		
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("database.txt"));
 			String str;
@@ -36,6 +39,7 @@ public class Database {
 	            }
 	        }
 	        in.close();
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Cannot find database.txt file! Program will now terminate.");
@@ -77,9 +81,12 @@ public class Database {
 			String pictureid,
 			String pictureownerid
 			){
-		Connection con = getConnection();
+		
 		Statement s;
+		Connection con = null;
+
 		try {
+			con = getConnection();
 			s = con.createStatement();
 			String query = "INSERT INTO fav_picture ( id,userid,pictureid,pictureownerid,timestamp ) VALUES " +
 			"(NULL,'"+userid+"','"+pictureid+"','"+pictureownerid+"',NOW())";
@@ -87,6 +94,9 @@ public class Database {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try { con.close(); }
+			catch (SQLException e) { }
 		}
 		
 		
@@ -99,9 +109,10 @@ public class Database {
 		//PRE: All inputs are valid
 		//POST: one of the contact of userid is added to the table, a timestamp of insertion time will
 		//be added by database upon data insertion. 
-		Connection con = getConnection();
+		Connection con = null;
 		try
 		{
+			con = getConnection();
 			Statement s = con.createStatement();
 			String query = "INSERT INTO contact_list (id ,userid ,contactid,timestamp ) VALUES " +
 					"(NULL,'"+userid+"','"+contactid+"',NOW())";
@@ -111,18 +122,82 @@ public class Database {
 		{
 			System.out.println(e.getMessage());
 		}
+		finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
+	public void addUserNumbers(
+			String userid,
+			int num_of_pics,
+			int num_of_contacts,
+			int num_of_favs){
+		//PRE: All inputs are valid
+		//POST: The number of a user at a time is updated
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO pic_contact_fav_numbers (id ,userid ,num_of_pics,num_of_contacts,num_of_favs,timestamp ) VALUES " +
+					"(NULL,'"+userid+"','"+num_of_pics+"','"+num_of_contacts+"','"+num_of_favs+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
+	
+	public void addPicNumbers(
+			int PictureId,
+			int num_of_tags,
+			int num_of_comments){
+		//PRE: All inputs are valid
+		//POST: The number of a pic at a time is updated
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO tags_comments_numbers (id ,pictureid ,num_of_tags,num_of_comments,timestamp ) VALUES " +
+					"(NULL,'"+PictureId+"','"+num_of_tags+"','"+num_of_comments+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
 	}
 	
 	public void addPicture(
 			String userid,
-			String pictureid) throws SQLException{
+			String pictureid){
 		//PRE:
 		//POST: database table user_picture is updated with latest picture 
-		Connection con = getConnection();
+		
+		Connection con = null;
+		
+		try{
+		con = getConnection();
 		Statement s = con.createStatement();
 		String query = "INSERT INTO user_picture (id,userid,pictureid,timestamp ) VALUES " +
 				" (NULL, '"+userid+"','"+pictureid+"',NOW())";
 		s.executeUpdate(query);
+		} catch (SQLException e){
+			e.printStackTrace();
+		} finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
 	}
 	
 	public void addPictureDetails(
@@ -130,9 +205,10 @@ public class Database {
 			long l,
 			long m){
 		//Add a picture detail to Picture Detail table
-		Connection con = getConnection();
+		Connection con = null;
 		Statement s;
 		try {
+			con = getConnection();
 			s = con.createStatement();
 			String query = "INSERT INTO picture_details (`pictureid`,`date_posted`,`last_update` ) VALUES " +
 				" ( '"+pictureid+"',FROM_UNIXTIME('"+l+"'),FROM_UNIXTIME('"+m+"'))";
@@ -140,6 +216,9 @@ public class Database {
 		} catch (SQLException e) {
 			// If SQLException happens, means Picture already in database, ignore
 			//e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
 		}
 
 	}
@@ -148,70 +227,121 @@ public class Database {
 			String pictureid,
 			String tagid,
 			String tag,
-			String tag_author) throws SQLException{
+			String tag_author){
 		//PRE:
 		//POST: a tag is added to a corresponding picture, including author info
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "INSERT INTO tags_of_a_pic (id,pictureid,tagid,tag,tag_author,timestamp ) VALUES " +
-				" (NULL, '"+pictureid+"','"+tagid+"','"+tag+"','"+tag_author+"',NOW())";
-		s.executeUpdate(query);
+		
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO tags_of_a_pic (id,pictureid,tagid,tag,tag_author,timestamp ) VALUES " +
+					" (NULL, '"+pictureid+"','"+tagid+"','"+tag+"','"+tag_author+"',NOW())";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+
 	}
 	
 	public void addCommentToPic(
 			String authorid,
 			String commentid,
 			String pictureid,
-			long datecreated) throws SQLException{
+			long datecreated){
 		//PRE:
 		//POST: a comment id is added to a corresponding picture, including author info
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "INSERT INTO comments_of_a_pic (id,authorid,commentid,pictureid,datecreate,timestamp ) VALUES " +
-				" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"',FROM_UNIXTIME('"+datecreated+"'),NOW())";
-		s.executeUpdate(query);
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO comments_of_a_pic (id,authorid,commentid,pictureid,datecreate,timestamp ) VALUES " +
+					" (NULL, '"+authorid+"','"+commentid+"','"+pictureid+"',FROM_UNIXTIME('"+datecreated+"'),NOW())";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+
 	}
 	
 	public void addTagToUser(
 			String userid,
 			String tagid,
-			String tag) throws SQLException{
+			String tag){
 		//PRE:
 		//POST: a Tag is added under the corresponding userid 
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "INSERT INTO user_tag (id,userid,tagid,tag,timestamp ) VALUES " +
-				" (NULL, '"+userid+"','"+tagid+"','"+tag+"',NOW())";
-		s.executeUpdate(query);
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO user_tag (id,userid,tagid,tag,timestamp ) VALUES " +
+					" (NULL, '"+userid+"','"+tagid+"','"+tag+"',NOW())";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+
 	}
 	
-	public static void addUser(
-			String userid) throws SQLException{
+	public void addUser(
+			String userid){
 		//PRE:
 		//POST: a user is added to the list of user table
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "INSERT INTO list_of_user (userid ) VALUES " +
-				" ( '"+userid+"')";
-		s.executeUpdate(query);
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO list_of_user (userid ) VALUES " +
+					" ( '"+userid+"')";
+			s.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+
 	}
 	
-	public ArrayList getUserList() throws SQLException{
+	public ArrayList getUserList() {
 		//
 		//Post: returns an ArrayList of Usernames
 		ArrayList<String> userList = new ArrayList<String>();
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "SELECT userid FROM list_of_user";
-		ResultSet temp = (ResultSet) s.executeQuery(query);
-		int i=0;
-		while(temp.next()) //Cycling through rows in ResultSet
-		{
-			String j = temp.getString("userid");
-			userList.add(j);
-			i++;
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT userid FROM list_of_user";
+			ResultSet temp = (ResultSet) s.executeQuery(query);
+			int i=0;
+			while(temp.next()) //Cycling through rows in ResultSet
+			{
+				String j = temp.getString("userid");
+				userList.add(j);
+				i++;
+			}
+			System.out.println("Total of "+i+" userids loaded.");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
 		}
-		System.out.println("Total of "+i+" userids loaded.");
+
 		return userList;
 	}
 	
@@ -220,23 +350,33 @@ public class Database {
 	 * @return
 	 * @throws SQLException
 	 */
-	public ArrayList getUserListTest() throws SQLException{
+	public ArrayList getUserListTest(){
 		//
 		//Post: returns an ArrayList of Usernames
 		ArrayList<String> userList = new ArrayList<String>();
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "SELECT userid FROM list_of_user";
-		ResultSet temp = (ResultSet) s.executeQuery(query);
-		int i=0;
-		while(temp.next()) //Cycling through rows in ResultSet
-		{
-			String j = temp.getString("userid");
-			userList.add(j);
-			i++;
-			if (i == 30){break;}
+		Connection con = null;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT userid FROM list_of_user";
+			ResultSet temp = (ResultSet) s.executeQuery(query);
+			int i=0;
+			while(temp.next()) //Cycling through rows in ResultSet
+			{
+				String j = temp.getString("userid");
+				userList.add(j);
+				i++;
+				if (i == 30){break;}
+			}
+			System.out.println("Total of "+i+" userids loaded.");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
 		}
-		System.out.println("Total of "+i+" userids loaded.");
+
 		return userList;
 	}
 	
@@ -249,13 +389,28 @@ public class Database {
 	 *  False if not exist
 	 * @throws SQLException 
 	 */
-	public boolean CheckUser(String UserId) throws SQLException{
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-		String query = "SELECT userid FROM list_of_user where userid='"+UserId+"'";
-		ResultSet temp = (ResultSet) s.executeQuery(query);
-		if (!temp.next()){return false;}
-		else { return true;}
-		
+	public boolean CheckUser(String UserId){
+		Connection con = null;
+		ResultSet temp = null;
+		boolean exist = false;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT userid FROM list_of_user where userid='"+UserId+"'";
+			temp = (ResultSet) s.executeQuery(query);
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				if (!temp.next()){exist= false;}
+				else { exist= true;}
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return exist;
+
 	}
 }
