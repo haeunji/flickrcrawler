@@ -9,6 +9,7 @@ import java.util.Iterator;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.FlickrCrawler.database.Database;
+import org.FlickrCrawler.runtime.*;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -30,7 +31,7 @@ public class CommentCrawler {
 		apiKey = f.getApiKey();
 		rest = new REST();
 		rest.setHost(restHost);
-		db = new Database();
+		db = flickrcrawler.db;
 		
 	}
 	
@@ -61,12 +62,7 @@ public class CommentCrawler {
 			
 			if (null == tempComment.getAuthor()){}else{date_create = tempComment.getDateCreate().getTime()/1000;}
 			
-			try {
-				db.addCommentToPic(author, commentid, PictureId, date_create);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			db.addCommentToPic(author, commentid, PictureId, date_create);
 		}
 		return CommentsList.size();
 		

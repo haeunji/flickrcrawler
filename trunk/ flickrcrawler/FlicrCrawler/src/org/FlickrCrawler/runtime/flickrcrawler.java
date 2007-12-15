@@ -27,6 +27,8 @@ import org.FlickrCrawler.Crawlers.PictureInfoCrawler;
 import org.FlickrCrawler.Crawlers.TagCrawler;
 import org.xml.sax.SAXException;
 
+import snaq.db.ConnectionPool;
+
 /*
  * flickrcrawler.java
  *
@@ -48,6 +50,7 @@ public class flickrcrawler {
     REST rest;
     static Flickr f;
     static String secret = "ba20e9e81829dde5";
+    public static Database db = new Database();
     
     public static void main(String[] args) throws InterruptedException, SQLException {
         Authorize authorization=null;
@@ -62,12 +65,17 @@ public class flickrcrawler {
         
         String filename = (String) params.get("file");
         if (filename == null || "".equals(filename)){
-			System.out.println("Pleasy specify generated file name by -file filename.txt");
+			System.out.println("Pleasy specify generated file name by file=filename.txt");
 			System.out.println("Use the following command : ");
-			System.out.println("        java -jar flickrcrawler.jar -file=UserList.txt ");
+			System.out.println("        java -jar flickrcrawler.jar file=UserList.txt ");
 			System.out.println("Database.txt needs to be configured correctly before this program is executed.");
 			System.exit(1);
 		}
+        
+        /**
+         * Testing database connection pool
+         */
+
 
         /**
          * Grabs a list of userIds from the UserListFile.txt.
@@ -79,6 +87,7 @@ public class flickrcrawler {
 	        while ((str = in.readLine()) != null) {
 	        	UserIdList.add(str.trim());
 	        }
+	        System.out.println("Successfully loaded "+UserIdList.size()+" userids.");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			System.out.println("UserId list file cannot be found. FlickrCrawler will now terminate.");

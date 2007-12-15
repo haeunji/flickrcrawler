@@ -52,12 +52,7 @@ public class FileCreator {
 		Database db = new Database();
 		ArrayList<String> UserIdList = new ArrayList();
 		
-		try {
-			UserIdList = db.getUserList();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		UserIdList = db.getUserList();
 		
 		int NumberOfUserId = UserIdList.size();
 		int NumberOfMachine = Integer.parseInt(num);

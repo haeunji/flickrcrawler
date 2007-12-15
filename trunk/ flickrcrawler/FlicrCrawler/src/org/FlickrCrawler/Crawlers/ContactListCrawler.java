@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.FlickrCrawler.database.Database;
+import org.FlickrCrawler.runtime.flickrcrawler;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -36,7 +37,8 @@ public class ContactListCrawler {
 	public void Crawl(ArrayList<String> UserIDList) throws SAXException, SQLException, InterruptedException{
 		Collection<Contact> ContactsCollection = null;
 		Iterator itr = UserIDList.iterator();
-		Database db = new Database();
+		Database db = flickrcrawler.db;
+		//Database db = new Database();
 		int counter=0;
 		//db.getConnection();
 		while(itr.hasNext()){
@@ -55,21 +57,27 @@ public class ContactListCrawler {
 			}
 			Iterator itr2 = ContactsCollection.iterator();
 			int number_contacts = ContactsCollection.size();
-			System.out.println("	Adding "+number_contacts+" contacts, Please wait.");
-			while(itr2.hasNext()){
-				// Get the UserID of the Contact 
-				String contactid = ((Contact) itr2.next()).getId();
-				// If the contact is not already in the List_of_user table, add it
-				if (!db.CheckUser(contactid)){db.addUser(contactid);}
-				db.addContact(userid, contactid);
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			int latest_contact_num = db.GetLatestContactNum(userid);
+			System.out.println("Contact List Crawling : "+counter+"/"+UserIDList.size());			
+			if ( number_contacts == latest_contact_num ){
+				System.out.println("	No change since last crawl, skip to next userid.");
+			}else{
+
+				System.out.println("	Adding " + number_contacts
+						+ " contacts, Please wait.");
+				while (itr2.hasNext()) {
+					// Get the UserID of the Contact
+					String contactid = ((Contact) itr2.next()).getId();
+					// If the contact is not already in the List_of_user table,
+					// add it
+
+					if (!db.CheckUser(contactid)) {
+						db.addUser(contactid);
+					}
+					db.addContact(userid, contactid);
 				}
 			}
-			System.out.println("Contact List Crawling : "+counter+"/"+UserIDList.size());
+			db.addUserContactNumbers(userid, number_contacts);
 		}
 	}
 }
