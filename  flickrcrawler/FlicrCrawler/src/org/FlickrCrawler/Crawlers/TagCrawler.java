@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.FlickrCrawler.database.Database;
+import org.FlickrCrawler.runtime.flickrcrawler;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -24,7 +25,7 @@ public class TagCrawler {
 	
 	public TagCrawler(Flickr f){
 		tagsinterface = f.getTagsInterface();
-		db = new Database();
+		db = flickrcrawler.db;
 		photo = new Photo();
 		tags = new ArrayList<Tag>();
 		
@@ -48,15 +49,10 @@ public class TagCrawler {
 		Iterator<Tag> itr=  tags.iterator();
 		while(itr.hasNext()){
 			Tag tempTag = itr.next();
-			try {
-				String tagid = tempTag.getId();
-				String tag = "";
-				String tag_author = tempTag.getAuthor();
-				db.addTagToPic(PhotoId, tagid, tag, tag_author);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String tagid = tempTag.getId();
+			String tag = "";
+			String tag_author = tempTag.getAuthor();
+			db.addTagToPic(PhotoId, tagid, tag, tag_author);
 		}
 		return tags.size();
 	}

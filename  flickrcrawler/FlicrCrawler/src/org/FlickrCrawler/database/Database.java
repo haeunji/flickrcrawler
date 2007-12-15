@@ -120,7 +120,7 @@ public class Database {
 		}
 		catch (SQLException e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		finally {
 			try { con.close(); }
@@ -128,30 +128,76 @@ public class Database {
 		}
 	}
 	
-	public void addUserNumbers(
+	public void addUserContactNumbers(
 			String userid,
-			int num_of_pics,
-			int num_of_contacts,
-			int num_of_favs){
+			int num_of_contacts){
 		//PRE: All inputs are valid
-		//POST: The number of a user at a time is updated
+		//POST: The number of a user's contact is inserted
 		Connection con = null;
 		try
 		{
 			con = getConnection();
 			Statement s = con.createStatement();
-			String query = "INSERT INTO pic_contact_fav_numbers (id ,userid ,num_of_pics,num_of_contacts,num_of_favs,timestamp ) VALUES " +
-					"(NULL,'"+userid+"','"+num_of_pics+"','"+num_of_contacts+"','"+num_of_favs+"',NOW())";
+			String query = "INSERT INTO contact_list_numbers (id ,userid ,num_of_contacts,timestamp ) VALUES " +
+					"(NULL,'"+userid+"','"+num_of_contacts+"',NOW())";
 			s.executeUpdate(query); // Executing Query
 		}
 		catch (SQLException e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}finally {
 			try { con.close(); }
 			catch (SQLException e) { }
 		}
 	}
+	
+	
+	public void addUserPicNumbers(
+			String userid,
+			int num_of_pics){
+		//PRE: All inputs are valid
+		//POST: The number of a user's contact is inserted
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO user_picture_numbers (id ,userid ,num_of_pics,timestamp ) VALUES " +
+					"(NULL,'"+userid+"','"+num_of_pics+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
+	public void addUserFavNumbers(
+			String userid,
+			int num_of_favs){
+		//PRE: All inputs are valid
+		//POST: The number of a user's contact is inserted
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO fav_picture_numbers (id ,userid ,num_of_favs,timestamp ) VALUES " +
+					"(NULL,'"+userid+"','"+num_of_favs+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
 	
 	
 	public void addPicNumbers(
@@ -171,7 +217,55 @@ public class Database {
 		}
 		catch (SQLException e)
 		{
-			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
+	
+	public void addPicCommentNumbers(
+			String photoId,
+			int num_of_comments){
+		//PRE: All inputs are valid
+		//POST: The number of a pic at a time is updated
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO comments_numbers (id ,pictureid ,num_of_comments,timestamp ) VALUES " +
+					"(NULL,'"+photoId+"','"+num_of_comments+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}finally {
+			try { con.close(); }
+			catch (SQLException e) { }
+		}
+	}
+	
+	
+	public void addPicTagNumbers(
+			String photoId,
+			int num_of_tags){
+		//PRE: All inputs are valid
+		//POST: The number of a pic at a time is updated
+		Connection con = null;
+		try
+		{
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "INSERT INTO tags_numbers (id ,pictureid ,num_of_tags,timestamp ) VALUES " +
+					"(NULL,'"+photoId+"','"+num_of_tags+"',NOW())";
+			s.executeUpdate(query); // Executing Query
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
 		}finally {
 			try { con.close(); }
 			catch (SQLException e) { }
@@ -215,7 +309,7 @@ public class Database {
 			s.executeUpdate(query);
 		} catch (SQLException e) {
 			// If SQLException happens, means Picture already in database, ignore
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}finally {
 			try { con.close(); }
 			catch (SQLException e) { }
@@ -412,5 +506,135 @@ public class Database {
 		}
 		return exist;
 
+	}
+	
+	public int GetLatestContactNum(String UserId){
+		Connection con = null;
+		ResultSet temp = null;
+		int num_of_contacts = 0;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT num_of_contacts FROM contact_list_numbers where userid='"+UserId+"' ORDER BY id DESC";
+			temp = (ResultSet) s.executeQuery(query);
+			while(temp.next()){
+				num_of_contacts = temp.getInt("num_of_contacts");
+				break; //get only latest data in database
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return num_of_contacts;
+	}
+	
+	public int GetLatestPicNum(String UserId){
+		Connection con = null;
+		ResultSet temp = null;
+		int num_of_pics = 0;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT num_of_pics FROM user_picture_numbers where userid='"+UserId+"' ORDER BY id DESC";
+			temp = (ResultSet) s.executeQuery(query);
+			while(temp.next()){
+				num_of_pics = temp.getInt("num_of_pics");
+				break; //get only latest data in database
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return num_of_pics;
+	}
+	
+	public int GetLatestfavNum(String UserId){
+		Connection con = null;
+		ResultSet temp = null;
+		int num_of_favs = 0;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT num_of_favs FROM pic_contact_fav_numbers where userid='"+UserId+"' ORDER BY id DESC";
+			temp = (ResultSet) s.executeQuery(query);
+			while(temp.next()){
+				num_of_favs = temp.getInt("num_of_favs");
+				break; //get only latest data in database
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return num_of_favs;
+	}
+	
+	public int GetLatestTagNum(String PictureId){
+		Connection con = null;
+		ResultSet temp = null;
+		int num_of_tags = 0;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT num_of_tags FROM tags_comments_numbers where pictureid='"+PictureId+"' ORDER BY id DESC";
+			temp = (ResultSet) s.executeQuery(query);
+			while(temp.next()){
+				num_of_tags = temp.getInt("num_of_tags");
+				break; //get only latest data in database
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return num_of_tags;
+	}
+	
+	public int GetLatestCommentNum(String PictureId){
+		Connection con = null;
+		ResultSet temp = null;
+		int num_of_comments = 0;
+		try {
+			con = getConnection();
+			Statement s = con.createStatement();
+			String query = "SELECT num_of_comments FROM tags_comments_numbers where pictureid='"+PictureId+"' ORDER BY id DESC";
+			temp = (ResultSet) s.executeQuery(query);
+			while(temp.next()){
+				num_of_comments = temp.getInt("num_of_comments");
+				break; //get only latest data in database
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { 
+				con.close(); 
+			}
+			catch (SQLException e) { }
+		}
+		return num_of_comments;
 	}
 }

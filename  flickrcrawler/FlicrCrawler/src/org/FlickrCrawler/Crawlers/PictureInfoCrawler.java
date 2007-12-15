@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.FlickrCrawler.database.Database;
+import org.FlickrCrawler.runtime.flickrcrawler;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -42,7 +43,7 @@ public class PictureInfoCrawler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		db = new Database();
+		db = flickrcrawler.db;
 		
 	}
 	
@@ -127,9 +128,11 @@ public class PictureInfoCrawler {
 			 * TagCrawler and CommentsCrawler is used to get these information
 			 */
 			int commentNum = commentcrawler.crawl(photoId);
+			db.addPicCommentNumbers(photoId, commentNum);
 			System.out.println("		Comment Crawled : "+commentNum);
 			int tagNum = tagcrawler.crawl(photoId);
 			System.out.println("		Tags Crawled : "+tagNum);
+			db.addPicTagNumbers(photoId, tagNum);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -140,9 +143,7 @@ public class PictureInfoCrawler {
 		} catch (FlickrException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SQLException e){
-			e.printStackTrace();
-		}
+		} 
 		
 		
 	}
@@ -153,8 +154,13 @@ public class PictureInfoCrawler {
 		int counter = 1;
 		//For each User, get a list of photos
 		while(itr.hasNext()){
-			tempPhotoList = this.getListOfPhotos((String) itr.next());
+			String UserId = (String) itr.next();
 			System.out.println("PictureInfoCrawler Progress : "+counter+" / "+UserIdList.size());
+			System.out.println("	Getting List of Pictures, please wait...");
+			tempPhotoList = this.getListOfPhotos(UserId);
+			int LatestNumOfPics = db.GetLatestPicNum(UserId);
+			int NewNumOfPics = tempPhotoList.size();
+			db.addUserPicNumbers(UserId, NewNumOfPics);
 			//If there the user has no pictures
 			if (null != tempPhotoList){
 				Iterator<Photo> itrPhoto = tempPhotoList.iterator();
@@ -162,8 +168,8 @@ public class PictureInfoCrawler {
 				//For each photos, get the details
 				int detailCounter = 1;
 				while(itrPhoto.hasNext()){
-					this.getPictureDetails(itrPhoto.next().getId());
 					System.out.println("	 Picture Detail Crawling : "+detailCounter+" / "+tempPhotoList.size());
+					this.getPictureDetails(itrPhoto.next().getId());
 					detailCounter++;
 				}
 			}

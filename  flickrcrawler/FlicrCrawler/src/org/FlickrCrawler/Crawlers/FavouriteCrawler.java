@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.FlickrCrawler.runtime.flickrcrawler;
 import org.FlickrCrawler.database.Database;
 import org.xml.sax.SAXException;
 
@@ -22,7 +23,7 @@ public class FavouriteCrawler {
 	public FavouriteCrawler(Flickr f){
 		
 		favoritesinterface = f.getFavoritesInterface();
-		db = new Database();
+		db = flickrcrawler.db;
 		
 	}
 	
@@ -74,15 +75,22 @@ public class FavouriteCrawler {
 	public void Crawl(ArrayList<String> UserIdList){
 		
 		java.util.Iterator<String> itr = UserIdList.iterator();
+		int counter = 1;
 		while (itr.hasNext()){
 			String UserId = itr.next();
+			System.out.println("Favourite List Crawling : "+counter+" / "+UserIdList.size());
 			PhotoList favPhotoList = this.getListOfFavPictures(UserId);
+			int num_of_favs = favPhotoList.size();
 			java.util.Iterator<Photo> PhotoListItr = favPhotoList.iterator();
-			
+			System.out.println("	Adding "+num_of_favs+" favourites, please wait...");
+			db.addUserFavNumbers(UserId, num_of_favs);
 			while( PhotoListItr.hasNext()){
 				Photo tempPhoto = PhotoListItr.next();
+
 				db.addFav(UserId, tempPhoto.getId(), tempPhoto.getOwner().getId());
+
 			}
+			counter++;
 			
 		}
 		
