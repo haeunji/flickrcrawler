@@ -73,7 +73,7 @@ public class PictureInfoCrawler {
 			totalPictureNum = tempUser.getPhotosCount();
 			
 			//if no pic, return null
-			if (totalPictureNum == 0){return null;}
+			if (totalPictureNum == 0){return list_of_photo;}
 			
 			pageNumber = (int)(totalPictureNum/perPage+1);
 			
